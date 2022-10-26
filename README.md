@@ -137,57 +137,8 @@ orderid 随机生成一个数，
 管理员可以查看用户，并且对一些恶意预订的用户进行冻结。
 
 管理员可以查看房间状态，新增/修改房间状态。
-
-# 项目展示
-
-登录页面：
-
-![image-20220719144306514](C:\Users\chen2\AppData\Roaming\Typora\typora-user-images\image-20220719144306514.png)
-
-注册页面：
-
-![image-20220719144320541](C:\Users\chen2\AppData\Roaming\Typora\typora-user-images\image-20220719144320541.png)
-
-注册成功：
-
-![image-20220719144346159](C:\Users\chen2\AppData\Roaming\Typora\typora-user-images\image-20220719144346159.png)
-
-登录成功：
-
-![image-20220719144406015](C:\Users\chen2\AppData\Roaming\Typora\typora-user-images\image-20220719144406015.png)
-
-身份认证：
-
-![image-20220719144423110](C:\Users\chen2\AppData\Roaming\Typora\typora-user-images\image-20220719144423110.png)
-
-预订房间：
-
-![image-20220719144505429](C:\Users\chen2\AppData\Roaming\Typora\typora-user-images\image-20220719144505429.png)
-
-查看订单：
-
-![image-20220719144517786](C:\Users\chen2\AppData\Roaming\Typora\typora-user-images\image-20220719144517786.png)
-
-管理员登录：
-
-![image-20220719144606323](C:\Users\chen2\AppData\Roaming\Typora\typora-user-images\image-20220719144606323.png)
-
-管理员界面：
-
-![image-20220719144623784](C:\Users\chen2\AppData\Roaming\Typora\typora-user-images\image-20220719144623784.png)
-
-管理员办理入住：
-
-![image-20220719144656818](C:\Users\chen2\AppData\Roaming\Typora\typora-user-images\image-20220719144656818.png)
-
-客户管理：
-
-![image-20220719144723910](C:\Users\chen2\AppData\Roaming\Typora\typora-user-images\image-20220719144723910.png)
-
-备份/恢复数据库：
-
-![image-20220719144748866](C:\Users\chen2\AppData\Roaming\Typora\typora-user-images\image-20220719144748866.png)
-
-未登录，无法进入主页：
-
-![image-20220719145042309](C:\Users\chen2\AppData\Roaming\Typora\typora-user-images\image-20220719145042309.png)
+# 使用方法
+ -> 确认你的电脑是否有Node，如果没有请安装，如果有，请在server文件夹下打开终端，输入命令
+    `npm install`安装依赖
+ -> 将server文件夹下的hotel.sql在你的mysql环境下运行
+ -> 使用VScode Live Server插件打开hotel即可
