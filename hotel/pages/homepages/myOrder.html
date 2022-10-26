@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>我的订单</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../../plugins/elementui/index.css" />
+    <link rel="stylesheet" href="../../css/root.css" />
+    <link rel="stylesheet" href="../../css//mystyle/order.css" />
+  </head>
+  <body>
+    <div id="app">
+      <el-header style="border-bottom: solid 1px #e6e6e6; color: #909399">
+        <el-col :span="8" :offset="2">
+          <span style="line-height: 60px; font-size: 30px">我的订单</span>
+        </el-col>
+        <el-col :span="8" :offset="6">
+          <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
+            <el-menu-item index="1"
+              ><a href="../home.html" title="预定房间"
+                ><i class="el-icon-view"></i>预订房间</a
+              ></el-menu-item
+            >
+            <el-menu-item index="2"><i class="el-icon-tickets"></i>我的订单</el-menu-item>
+            <el-menu-item index="3"
+              ><a href="../homepages/mine.html" title="我的"
+                ><i class="el-icon-user-solid"></i>我的</a
+              ></el-menu-item
+            >
+          </el-menu>
+        </el-col>
+      </el-header>
+      <el-main>
+        <el-col id="orderlists" :span="18" :offset="3"
+          ><ul>
+            <li v-for="(item,index) in roomorder" :key="index" v-if="item.state !== 3">
+              <div id="imgitem">
+                <img :src="item.imgURL" alt="" />
+              </div>
+              <div id="orderitem">
+                <p>
+                  <span style="margin-right: 50px">房间号：{{item.rid}}</span
+                  >房间类型：{{item.roomdesc}}
+                </p>
+                <p>订单编号：{{item.ordernumber}}</p>
+                <p>入住人：{{item.realname}}</p>
+                <p>联系手机：{{item.phone}}</p>
+                <p>价格：{{item.price}}元</p>
+                <p>入住时间：{{item.starttime}} - {{item.endtime}}</p>
+              </div>
+              <div id="handle">
+                <span>{{item.statedesc}}</span>
+                <el-button v-if="item.state <= 1" @click="open(item.ordernumber)">退房</el-button>
+                <el-button v-if="item.state > 1" @click="opendelete(item.ordernumber)"
+                  >删除</el-button
+                >
+              </div>
+            </li>
+          </ul>
+        </el-col>
+      </el-main>
+    </div>
+  </body>
+  <!--引入 vue-->
+  <script src="../../js/vue.js"></script>
+  <!--引入 axios-->
+  <script src="../../js/axios.min.js"></script>
+  <!-- 引入组件库 -->
+  <script src="../../plugins/elementui/index.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data() {
+        return {
+          activeName: 'second',
+          activeIndex: '2',
+          roomorder: [],
+          user: {},
+        };
+      },
+      created() {
+        this.getuser();
+        this.selectorder();
+      },
+      methods: {
+        adddesc() {
+          for (let i = 0; i < this.roomorder.length; i++) {
+            switch (this.roomorder[i].state) {
+              case 0:
+                this.roomorder[i].statedesc = '未入住';
+                break;
+              case 1:
+                this.roomorder[i].statedesc = '已入住';
+                break;
+              case 2:
+                this.roomorder[i].statedesc = '已退房';
+                break;
+            }
+          }
+          if (this.roomorder.length == 0) {
+            this.$message.info('您尚未预订房间，请先预订房间！');
+          }
+          console.log(this.roomorder);
+        },
+        checkout(orderid) {
+          var data = new URLSearchParams();
+          data.append('orderid', orderid);
+          axios
+            .post('http://127.0.0.1:8081/room/checkout', data)
+            .then((res) => {
+              this.selectorder();
+            })
+            .catch((err) => {
+              this.$message.error('退房失败，请稍后再试！');
+            });
+        },
+        open(orderid) {
+          this.$confirm('确定退房间嘛?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'info',
+            center: true,
+          })
+            .then(() => {
+              this.$message({
+                type: 'success',
+                message: '退房成功！',
+              });
+              this.checkout(orderid);
+            })
+            .catch(() => {
+              this.$message({
+                type: 'info',
+                message: '取消退房',
+              });
+            });
+        },
+        selectorder() {
+          axios
+            .post('http://127.0.0.1:8081/room/selectorder')
+            .then((res) => {
+              this.roomorder = res.data.data;
+              console.log(this.roomorder);
+              this.adddesc();
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        },
+        opendelete(orderid) {
+          this.$confirm('确定要删除此订单嘛?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'info',
+            center: true,
+          })
+            .then(() => {
+              this.$message({
+                type: 'success',
+                message: '删除成功！',
+              });
+              this.deleteorder(orderid);
+            })
+            .catch(() => {
+              this.$message({
+                type: 'info',
+                message: '取消删除！',
+              });
+            });
+        },
+        deleteorder(orderid) {
+          var data = new URLSearchParams();
+          data.append('orderid', orderid);
+          axios
+            .post('http://127.0.0.1:8081/room/deleteorder', data)
+            .then((res) => {
+              this.selectorder();
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        },
+        getuser() {
+          axios
+            .post('http://127.0.0.1:8081/room/mine')
+            .then((res) => {
+              this.user = res.data;
+              if (this.user.state == 1) {
+                this.$message.error('未登录，即将跳转到登录页面');
+                setTimeout(() => {
+                  window.location.href = '../../login.html';
+                }, 1000);
+              }
+            })
+            .catch((err) => {
+              this.$message.error('请求失败，请重试！');
+            });
+        },
+      },
+    });
+  </script>
+</html>

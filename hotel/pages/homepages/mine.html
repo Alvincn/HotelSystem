@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>用户首页</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../../plugins/elementui/index.css" />
+    <link rel="stylesheet" href="../../css/root.css" />
+    <link rel="stylesheet" href="../../css/mystyle/mine.css" />
+  </head>
+  <body>
+    <div id="app">
+      <el-header style="border-bottom: solid 1px #e6e6e6; color: #909399">
+        <el-col :span="8" :offset="2">
+          <span style="line-height: 60px; font-size: 30px">用户首页 </span>
+        </el-col>
+        <el-col :span="8" :offset="6">
+          <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
+            <el-menu-item index="1"
+              ><a href="../home.html" title="预订房间"
+                ><i class="el-icon-view"></i>预订房间</a
+              ></el-menu-item
+            >
+            <el-menu-item index="2"
+              ><a href="../homepages/myOrder.html" title="我的订单"
+                ><i class="el-icon-tickets"></i>我的订单</a
+              ></el-menu-item
+            >
+            <el-menu-item index="3"><i class="el-icon-user-solid"></i>我的</el-menu-item>
+          </el-menu>
+        </el-col>
+      </el-header>
+      <el-main>
+        <el-col id="mine" :span="18" :offset="3">
+          <div id="info" v-show="infoshow">
+            <p>用户名：{{user.username}}</p>
+            <p>账号：{{user.cid}}</p>
+            <p>用户姓名：{{user.cname}}</p>
+            <p>电话号：{{user.cphone}}</p>
+            <p>
+              身份认证：{{user.desc}}
+              <el-button type="primary" round v-show="user.authentication == 1" @click="authen"
+                >去认证</el-button
+              >
+            </p>
+            <el-button @click="quit">退出登录</el-button>
+            <el-button @click="changepwd">修改密码</el-button>
+          </div>
+          <div id="step" v-if="isshow">
+            <el-steps :active="active" finish-status="success">
+              <el-step title="输入电话号"></el-step>
+              <el-step title="输入真实姓名"></el-step>
+              <el-step title="输入身份证号"></el-step>
+            </el-steps>
+            <div id="step1" style="margin-top: 50px" v-show="phoneshow">
+              请输入电话号：<el-input
+                placeholder="请输入电话号"
+                prefix=""
+                prefix-icon="el-icon-phone"
+                v-model="phone"
+              ></el-input>
+            </div>
+            <div id="step2" style="margin-top: 50px" v-show="realnameshow">
+              请输入真实姓名：<el-input
+                placeholder="请输入真实姓名"
+                prefix=""
+                prefix-icon="el-icon-custom"
+                v-model="realname"
+              ></el-input>
+            </div>
+            <div id="step3" style="margin-top: 50px" v-show="cardidshow">
+              请输入身份证号：<el-input
+                placeholder="请输入身份证号"
+                prefix=""
+                prefix-icon="el-icon-postcard"
+                v-model="cardid"
+              ></el-input>
+            </div>
+            <el-button @click="next">下一步</el-button>
+          </div>
+        </el-col>
+      </el-main>
+    </div>
+  </body>
+  <!--引入 vue-->
+  <script src="../../js/vue.js"></script>
+  <!--引入 axios-->
+  <script src="../../js/axios.min.js"></script>
+  <!-- 引入组件库 -->
+  <script src="../../plugins/elementui/index.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data() {
+        return {
+          activeName: 'second',
+          activeIndex: '3',
+          user: {},
+          isshow: false,
+          active: 0,
+          infoshow: true,
+          phone: '',
+          cardid: '',
+          realname: '',
+          phoneshow: true,
+          realnameshow: false,
+          cardidshow: false,
+        };
+      },
+      mounted() {
+        axios
+          .post('http://127.0.0.1:8081/room/mine')
+          .then((res) => {
+            this.user = res.data.data;
+            console.log(this.user);
+            if (this.user.authentication == 0) {
+              this.user.desc = '已认证';
+            }
+            if (this.user.authentication == 1) {
+              this.user.desc = '未认证';
+            }if (this.user.authentication ==2) {
+              this.user.desc = '账号已冻结';
+            }
+            if (this.user.userphone == 'null') {
+              this.user.userphone = '未知';
+            }
+            if (this.user.realname == 'null') {
+              this.user.realname = '未知';
+            }
+          })
+          .catch((err) => {
+            this.$message.error('请求失败，请重试！');
+          });
+      },
+      methods: {
+        authen() {
+          this.infoshow = false;
+          this.isshow = true;
+        },
+        next() {
+          if (this.cardid || this.phone || this.realname) {
+            if (!isNaN(this.phone) && !isNaN(this.cardid)) {
+              this.active++;
+              if (this.active == 1) {
+                this.phoneshow = false;
+                this.realnameshow = true;
+              } else if (this.active == 2) {
+                this.realnameshow = false;
+                this.cardidshow = true;
+              }
+              if (this.active == 3) {
+                this.$message.success('认证成功');
+                this.infoshow = true;
+                this.isshow = false;
+                this.user.phone = this.phone;
+                this.user.realname = this.realname;
+                this.user.cardid = this.cardid;
+                this.user.userphone = this.phone;
+                this.user.realname = this.realname;
+                this.user.authentication = 0;
+                if (this.user.authentication == 0) {
+                  this.user.desc = '已认证';
+                }
+                if (this.user.authentication == 1) {
+                  this.user.desc = '未认证';
+                }
+                var data = new URLSearchParams();
+                data.append('cid', this.user.cid);
+                data.append('cname', this.realname);
+                data.append('ccardid', this.cardid);
+                data.append('cphone', this.phone);
+                axios
+                  .post('http://127.0.0.1:8081/api/insertauth', data)
+                  .then((res) => {
+                    console.log(res);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }
+            } else {
+              this.$message.error('您输入的不是数字');
+            }
+          } else {
+            this.$message.error('输入不要为空');
+          }
+        },
+        quit() {
+          this.$confirm('确定出登录嘛?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'info',
+            center: true,
+          })
+            .then(() => {
+              this.$message({
+                type: 'success',
+                message: '退出登录！',
+              });
+              this.deleteuser();
+              window.location.href = '../../login.html';
+            })
+            .catch(() => {});
+        },
+        deleteuser() {
+          axios
+            .post('http://127.0.0.1:8081/api/deleteuser')
+            .then((res) => {
+              console.log(res);
+              this.$message.success('退出登录');
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        },
+        changepwd() {
+          this.$prompt('请输入新密码', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+          })
+            .then(({ value }) => {
+              this.$message({
+                type: 'success',
+                message: '修改成功',
+              });
+              var data = new URLSearchParams();
+              data.append('cid', this.user.cid);
+              data.append('newpwd', value);
+              axios
+                .post('http://127.0.0.1:8081/api/changepwd', data)
+                .then((res) => {
+                  console.log(res);
+                })
+                .catch((err) => {
+                  this.$message.error('修改失败');
+                });
+            })
+            .catch(() => {
+              this.$message({
+                type: 'info',
+                message: '修改失败',
+              });
+            });
+        },
+      },
+    });
+  </script>
+</html>

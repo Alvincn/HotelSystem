@@ -1,0 +1,31 @@
+#orderlists ul li {
+  border: solid 1px gray;
+  border-radius: 8px;
+  height: 200px;
+  margin-bottom: 20px;
+  display: flex;
+  padding: 10px 20px;
+}
+#orderlists ul li #imgitem {
+  height: 100%;
+  margin-right: 50px;
+  border-right: solid 1px gray;
+}
+#orderlists ul li #imgitem img {
+  height: 100%;
+  width: 270px;
+}
+#orderlists ul li #orderitem {
+  line-height: 30px;
+  flex: 2;
+}
+#orderlists ul li #handle {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  margin: 0;
+  text-align: center;
+}
+#orderlists ul li #handle .el-button {
+  margin: 0;
+}

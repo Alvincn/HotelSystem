@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>用户首页</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../plugins/elementui/index.css" />
+  <!-- <link
+      rel="stylesheet"
+      href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"
+    /> -->
+  <link rel="stylesheet" href="../css/root.css" />
+  <style>
+    .time {
+      font-size: 13px;
+      color: #999;
+    }
+
+    .bottom {
+      margin-top: 13px;
+      line-height: 12px;
+    }
+
+    .button {
+      padding: 0;
+      float: right;
+    }
+
+    .image {
+      width: 100%;
+      display: block;
+      height: 373px;
+    }
+
+    .clearfix:before,
+    .clearfix:after {
+      display: table;
+      content: '';
+    }
+
+    .clearfix:after {
+      clear: both;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 头部导航栏 -->
+    <el-header style="border-bottom: solid 1px #e6e6e6; color: #909399">
+      <!-- logo -->
+      <el-col :span="8" :offset="2">
+        <span style="line-height: 60px; font-size: 30px">客房预订系统</span>
+      </el-col>
+      <!-- 导航栏 -->
+      <el-col :span="8" :offset="6">
+        <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
+          <el-menu-item index="1"><i class="el-icon-view"></i>预订房间</el-menu-item>
+          <el-menu-item index="2"><a href="./homepages/myOrder.html" title="我的订单"><i
+                class="el-icon-tickets"></i>我的订单</a></el-menu-item>
+          <el-menu-item index="3"><a href="./homepages/mine.html" title="我的"><i class="el-icon-user-solid"></i>我的</a>
+          </el-menu-item>
+        </el-menu>
+      </el-col>
+    </el-header>
+    <!-- 网页主体内容 -->
+    <el-main>
+      <el-col :span="24" center>
+        <el-col :span="12" :offset="7">
+          筛选：
+          <el-select v-model="roomtype" placeholder="房间类型">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+          <el-select v-model="price" placeholder="单价">
+            <el-option v-for="item in options1" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+          <el-button @click="sift">查询</el-button>
+          <el-button @click="Refresh">刷新</el-button>
+        </el-col>
+      </el-col>
+      <div id="rooms" style="margin-top: 60px">
+        <el-row>
+          <el-col :span="9" v-for="(item, index) in newList" :key="item.rid" :offset="2"
+            style="margin-bottom: 20px; overflow: hidden">
+            <el-card :body-style="{ padding: '0px'}">
+              <img :src="item.imgURL" class="image" title="图片" />
+              <div style="padding: 14px">
+                <span>{{item.roomdesc}}</span>
+                <div class="bottom clearfix">
+                  <span>单价：{{item.price}}</span>
+                  <el-button type="text" class="button" @click="open(item.rid)">预订</el-button>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+      </div>
+    </el-main>
+  </div>
+</body>
+<!--引入 vue-->
+<script src="../js/vue.js"></script>
+<!--引入 axios-->
+<script src="../js/axios.min.js"></script>
+<!-- 引入组件库 -->
+<script src="../plugins/elementui/index.js"></script>
+<script>
+  new Vue({
+    el: '#app',
+    data() {
+      return {
+        activeName: 'second',
+        activeIndex: '1',
+        data: [],
+        user: {},
+        newList: [],
+        options: [{
+            value: '1',
+            label: '大床房',
+          },
+          {
+            value: '2',
+            label: '双床房',
+          },
+          {
+            value: '4',
+            label: 'LOFT公寓',
+          },
+          {
+            value: '5',
+            label: '总统套房',
+          },
+        ],
+        options1: [{
+            value: '1',
+            label: '￥0~￥100',
+          },
+          {
+            value: '2',
+            label: '￥100~￥200',
+          },
+          {
+            value: '3',
+            label: '￥200~￥400',
+          },
+          {
+            value: '4',
+            label: '￥400以上',
+          },
+        ],
+        roomtype: '',
+        price: '',
+      };
+    },
+    created() {
+      this.getuser();
+      axios
+        .post('http://127.0.0.1:8081/room/roomdetails')
+        .then((res) => {
+          this.data = res.data.data;
+          this.newList = this.data;
+          axios
+            .post('http://127.0.0.1:8081/room/mine')
+            .then((res) => {
+              this.user = res.data.data;
+              if (this.user.authentication == 1) {
+                this.$message.error('您尚未进行身份认证，请在我的中进行身份认证！');
+              }
+              if (this.user.authentication == 2) {
+                this.$message.error('您的账号已被冻结，请联系酒店工作人员！');
+              }
+            })
+            .catch((err) => {
+              this.$message.error('请求失败，请重试！');
+            });
+        })
+        .catch((err) => {
+          this.$message.error('请求失败，请刷新重试！');
+        });
+    },
+    methods: {
+      sift() {
+        console.log(this.price);
+        console.log(this.roomtype);
+        if (this.price == '') {
+          this.newList = this.data.filter((item) => {
+            return item.rtype == this.roomtype;
+          });
+        } else if (this.roomtype == '') {
+          if (this.price == 1) {
+            this.newList = this.data.filter((item) => {
+              return item.price > 0 && item.price < 100;
+            });
+            console.log(this.data);
+          } else if (this.price == 2) {
+            this.newList = this.data.filter((item) => {
+              return item.price > 100 && item.price < 200;
+            });
+          } else if (this.price == 3) {
+            this.newList = this.data.filter((item) => {
+              return item.price > 200 && item.price < 400;
+            });
+          } else if (this.price == 4) {
+            this.newList = this.data.filter((item) => {
+              return item.price > 400;
+            });
+          }
+        } else if (this.price == 1) {
+          this.newList = this.data.filter((item) => {
+            return item.rtype == this.roomtype && item.price > 0 && item.price < 100;
+          });
+          console.log(this.data);
+        } else if (this.price == 2) {
+          this.newList = this.data.filter((item) => {
+            return item.rtype == this.roomtype && item.price > 100 && item.price < 200;
+          });
+        } else if (this.price == 3) {
+          this.newList = this.data.filter((item) => {
+            return item.rtype == this.roomtype && item.price > 200 && item.price < 400;
+          });
+        } else if (this.price == 4) {
+          this.newList = this.data.filter((item) => {
+            return item.rtype == this.roomtype && item.price > 400;
+          });
+        }
+        if (this.newList.length == 0) {
+          const h = this.$createElement;
+
+          this.$notify.info({
+            title: '数据为空',
+            message: '请重新输入查询条件',
+          });
+        }
+      },
+      Refresh() {
+        axios
+          .post('http://127.0.0.1:8081/room/roomdetails')
+          .then((res) => {
+            this.data = res.data.data;
+            this.newList = this.data;
+            this.roomtype = '';
+            this.price = '';
+          })
+          .catch((err) => {
+            this.$message.error('请求失败，请刷新重试！');
+          });
+      },
+      open(rid) {
+        if (this.user.authentication == 1) {
+          return this.$message.error('您尚未进行身份认证，无法预订！');
+        }
+        if (this.user.authentication == 2) {
+          return this.$message.error('您的账号已被冻结，无法预订房间！');
+        }
+        this.$confirm('确定预订此房间嘛?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'info',
+            center: true,
+          })
+          .then(() => {
+            this.$message({
+              type: 'success',
+              message: '预订成功，请到我的订单中查看!',
+            });
+            this.booking(rid);
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消预订',
+            });
+          });
+      },
+      booking(rid) {
+        var data = new URLSearchParams();
+        data.append('rid', rid);
+        axios
+          .post('http://127.0.0.1:8081/room/insertorder', data)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            this.$message.error('预订失败，请稍后再试！' + err);
+          });
+      },
+      getuser() {
+        axios
+          .post('http://127.0.0.1:8081/room/mine')
+          .then((res) => {
+            this.user = res.data;
+            if (this.user.state == 1) {
+              this.$message.error('未登录，即将跳转到登录页面');
+              setTimeout(() => {
+                window.location.href = '../login.html';
+              }, 1000);
+            }
+          })
+          .catch((err) => {
+            this.$message.error('请求失败，请重试！');
+          });
+      },
+    },
+  });
+</script>
+
+</html>

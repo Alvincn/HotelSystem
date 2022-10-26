@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理员页面</title>
+  <link rel="stylesheet" href="../plugins/elementui/index.css" />
+  <link rel="stylesheet" href="../css/root.css" />
+  <style>
+    .el-menu-item {
+      height: 70px;
+      line-height: 70px;
+    }
+
+    .el-submenu__title {
+      height: 70px;
+      line-height: 70px;
+    }
+
+    .el-menu-vertical-demo {
+      height: calc(100vh);
+    }
+
+    .el-table .warning-row {
+      background: oldlace;
+    }
+
+    .el-table .success-row {
+      background: #f0f9eb;
+    }
+
+    .el-table .error-row {
+      background: #f9ebeb;
+    }
+
+    .el-table .freeze-row {
+      background: #ebf7f9;
+    }
+
+    .el-table .nothen-row {
+      background: #f9ebf2;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <el-container>
+      <el-header style="color: gray; height: 50px; border-bottom: solid 1px gray">
+        <span style="font-size: 30px; margin-left: 10px">酒店预订管理系统 管理员页面</span>
+        <span style="margin-left: 800px">
+          <span style="margin-right: 30px">你好，{{user.rootname}}</span>
+          <el-button type="text" @click="quit">退出登录</el-button>
+        </span>
+      </el-header>
+      <el-container>
+        <el-aside width="250px">
+          <el-menu default-active="1-1" class="el-menu-vertical-demo">
+            <el-submenu index="1">
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span>房间管理</span>
+              </template>
+              <el-menu-item index="1-1" @click="getrooms">
+                <i class="el-icon-location"></i>
+                <span slot="title">全部房间</span>
+              </el-menu-item>
+              <el-menu-item index="1-2" @click="dachuangfang">
+                <i class="el-icon-location"></i>
+                <span slot="title">大床房</span>
+              </el-menu-item>
+              <el-menu-item index="1-3" @click="shuangrenfang">
+                <i class="el-icon-location"></i>
+                <span slot="title">双人床</span>
+              </el-menu-item>
+              <el-menu-item index="1-4" @click="gongyu">
+                <i class="el-icon-location"></i>
+                <span slot="title">公寓</span>
+              </el-menu-item>
+              <el-menu-item index="1-5" @click="taofang">
+                <i class="el-icon-location"></i>
+                <span slot="title">总统套房</span>
+              </el-menu-item>
+            </el-submenu>
+            <el-submenu index="2">
+              <template slot="title">
+                <i class="el-icon-document"></i>
+                <span>订单管理</span>
+              </template>
+              <el-menu-item index="3-1" @click="getorder">
+                <i class="el-icon-document-copy"></i>
+                <span slot="title">全部订单</span>
+              </el-menu-item>
+              <el-menu-item index="3-2" @click="nothandleorder">
+                <i class="el-icon-document-remove"></i>
+                <span slot="title">未处理订单</span>
+              </el-menu-item>
+              <el-menu-item index="3-3" @click="handleordered">
+                <i class="el-icon-document-delete"></i>
+                <span slot="title">已完成订单</span>
+              </el-menu-item>
+            </el-submenu>
+
+            <el-menu-item index="3" @click="getusers">
+              <i class="el-icon-user-solid"></i>
+              <span slot="title">客户管理</span>
+            </el-menu-item>
+            <el-menu-item index="4" @click="systemopen">
+              <i class="el-icon-setting"></i>
+              <span slot="title">系统管理</span>
+            </el-menu-item>
+          </el-menu>
+        </el-aside>
+        <el-main>
+          <div id="rooms" v-show="roomsshow">
+            <el-button type="text" @click="dialogVisible = true">添加房间</el-button>
+            <el-dialog title="添加房间" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+              <el-input v-model="rid" placeholder="房间号" style="margin-bottom: 20px; width: 195px"></el-input>
+
+              <el-select v-model="value" placeholder="房间类型">
+                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+
+              <el-input v-model="price" placeholder="单价" style="margin-bottom: 20px"></el-input>
+              <el-input v-model="roomdesc" placeholder="房间描述" style="margin-bottom: 20px"></el-input>
+              <el-input v-model="imgURL" placeholder="图片链接" style="margin-bottom: 20px"></el-input>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="addroom">确 定</el-button>
+              </span>
+            </el-dialog>
+
+            <el-dialog title="编辑房间" :visible.sync="dialogupdata" width="30%" :before-close="handleClose">
+              <el-input v-model="changeprice" placeholder="修改单价" style="margin-bottom: 20px"></el-input>
+
+              <el-select v-model="value1" placeholder="房间状态">
+                <el-option v-for="item in options1" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogupdata = false">取 消</el-button>
+                <el-button type="primary" @click="updateroom">确 定</el-button>
+              </span>
+            </el-dialog>
+            <el-table :data="newrooms" style="width: 100%" :row-class-name="tableRowClassName">
+              <el-table-column prop="rid" label="房间号" width="180"> </el-table-column>
+              <el-table-column prop="roomdesc" label="房间描述" width="180"> </el-table-column>
+              <el-table-column prop="typedesc" label="房间类型" width="180"> </el-table-column>
+              <el-table-column prop="rstate" label="房间状态" width="180"> </el-table-column>
+              <el-table-column prop="price" label="单价" width="180"> </el-table-column>
+              <el-table-column fixed="right" label="操作" width="180">
+                <template slot-scope="scope">
+                  <el-button @click="updateshow(scope.row)" type="text" size="small">
+                    <i class="el-icon-edit"></i>
+                    编辑
+                  </el-button>
+                  <el-button type="text" size="small" @click="deleteroom(scope.row)">
+                    <i class="el-icon-delete"></i>
+                    删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <div id="orders" v-show="ordershow">
+            <el-table :data="neworders" style="width: 100%" :row-class-name="tableRowClassName">
+              <el-table-column prop="orderid" label="订单编号" width="180"> </el-table-column>
+              <el-table-column prop="rid" label="房间号" width="100"> </el-table-column>
+              <el-table-column prop="cid" label="用户id" width="100"> </el-table-column>
+              <el-table-column prop="starttime" label="开始时间" width="200"> </el-table-column>
+              <el-table-column prop="endtime" label="结束时间" width="200"> </el-table-column>
+              <el-table-column prop="orderstatedesc" label="订单状态" width="200"></el-table-column>
+              <el-table-column fixed="right" label="操作">
+                <template slot-scope="scope">
+                  <el-button :disabled="scope.row.orderstate !== 0" type="text" size="small" @click="checkin(scope)">入住
+                  </el-button>
+                  <el-button :disabled="scope.row.orderstate !== 1" @click="checkout(scope)" type="text" size="small">退房
+                  </el-button>
+                  <el-button :disabled="scope.row.orderstate !== 2 && scope.row.orderstate !==3"
+                    @click="deleorder(scope)" type="text" size="small">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <div id="users" v-show="usersshow">
+            <el-table :data="users" style="width: 100%" :row-class-name="orderClassName">
+              <el-table-column prop="cid" label="用户编号" width="100"> </el-table-column>
+              <el-table-column prop="username" label="用户名" width="180"> </el-table-column>
+              <el-table-column prop="cname" label="真实姓名" width="180"> </el-table-column>
+              <el-table-column prop="ccardid" label="身份证号" width="200"> </el-table-column>
+              <el-table-column prop="cphone" label="电话号" width="200"> </el-table-column>
+              <el-table-column prop="authendesc" label="身份认证" width="200"> </el-table-column>
+              <el-table-column fixed="right" label="操作">
+                <template slot-scope="scope">
+                  <el-button :disabled="scope.row.authentication !== 2" type="text" size="small"
+                    @click="nofreeze(scope)">解冻</el-button>
+                  <el-button :disabled="scope.row.authentication === 2" type="text" size="small" @click="freeze(scope)">
+                    冻结</el-button>
+                  <el-button type="text" size="small" @click="deletecustom(scope)">注销</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <div id="system" v-show="systemshow">
+            <el-button @click="backup">备份数据库</el-button>
+            <el-button @click="restore">恢复数据库</el-button>
+          </div>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+</body>
+<script src="../js/vue.js"></script>
+<!--引入 axios-->
+<script src="../js/axios.min.js"></script>
+<!-- 引入组件库 -->
+<script src="../plugins/elementui/index.js"></script>
+<script>
+  new Vue({
+    el: '#app',
+    data() {
+      return {
+        rooms: [],
+        newrooms: [],
+        user: {},
+        orders: [],
+        neworders: [],
+        users: [],
+        roomsshow: true,
+        ordershow: false,
+        usersshow: false,
+        systemshow: false,
+        dialogVisible: false,
+        dialogupdata: false,
+        ruzhu: false,
+        tuifang: false,
+        shanchu: false,
+        rid: '',
+        rtype: '',
+        price: '',
+        roomdesc: '',
+        imgURL: '',
+        scope: '',
+        changeprice: '',
+        options: [{
+            value: '1',
+            label: '大床房',
+          },
+          {
+            value: '2',
+            label: '标准间',
+          },
+          {
+            value: '4',
+            label: '公寓',
+          },
+          {
+            value: '5',
+            label: '套房',
+          },
+        ],
+        value: '',
+        options1: [{
+            value: '0',
+            label: '未使用',
+          },
+          {
+            value: '1',
+            label: '正在使用',
+          },
+          {
+            value: '2',
+            label: '停用',
+          },
+        ],
+        value1: '',
+      };
+    },
+    mounted() {
+      this.getorder();
+      this.getrooms();
+      this.roomsshow = true;
+      this.ordershow = false
+
+      axios
+        .post('http://127.0.0.1:8081/root/root')
+        .then((res) => {
+          this.user = res.data.data;
+          if (res.data.state == 1) {
+            this.$message.error('未登录，即将跳转到登录页面');
+            setTimeout(() => {
+              window.location.href = '../login.html';
+            }, 1000);
+          }
+        })
+        .catch((err) => {
+          this.$message.error('请求失败，请重试！');
+        });
+    },
+    methods: {
+      handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then((_) => {
+            done();
+          })
+          .catch((_) => {});
+      },
+      // 控制颜色
+      tableRowClassName({
+        row,
+        rowIndex
+      }) {
+        if (row.rstate == '正在使用') {
+          return 'warning-row';
+        } else if (row.rstate == '停用') {
+          return 'error-row';
+        }
+
+        return '';
+      },
+      orderClassName({
+        row,
+        rowIndex
+      }) {
+        if (row.authentication == 2) {
+          return 'freeze-row';
+        } else if (row.authentication == 1) {
+          return 'nothen-row';
+        }
+
+        return '';
+      },
+      getrooms() {
+        axios
+          .post('http://127.0.0.1:8081/root/allrooms')
+          .then((res) => {
+            if (res.data.state === 0) {
+              this.rooms = res.data.data;
+              this.newrooms = this.rooms;
+              this.ordershow = false;
+              this.usersshow = false;
+              this.systemshow = false;
+              this.roomsshow = true;
+              for (let i = 0; i < this.rooms.length; i++) {
+                switch (this.rooms[i].rtype) {
+                  case 1:
+                    this.rooms[i].typedesc = '大床房';
+                    break;
+                  case 2:
+                    this.rooms[i].typedesc = '双人床';
+                    break;
+                  case 4:
+                    this.rooms[i].typedesc = '公寓';
+                    break;
+                  case 5:
+                    this.rooms[i].typedesc = '总统套房';
+                    break;
+                }
+                switch (this.rooms[i].rstate) {
+                  case 0:
+                    this.rooms[i].rstate = '未使用';
+                    break;
+                  case 1:
+                    this.rooms[i].rstate = '正在使用';
+                    break;
+                  case 2:
+                    this.rooms[i].rstate = '停用';
+                    break;
+                }
+              }
+            } else {
+              this.$message.error(res.data.message)
+            }
+
+          })
+          .catch((err) => {
+            this.$message.error('请求失败，请重试！');
+          });
+      },
+      addroom() {
+        var data = new URLSearchParams();
+        data.append('rid', this.rid);
+        data.append('rtype', this.value);
+        data.append('price', this.price);
+        data.append('roomdesc', this.roomdesc);
+        data.append('imgURL', this.imgURL);
+        axios
+          .post('http://127.0.0.1:8081/root/addroom', data)
+          .then((res) => {
+            if (res.data.state === 0) {
+              console.log(res);
+              this.dialogVisible = false;
+              this.$message.success('添加成功');
+              this.getrooms();
+
+              this.rid = '';
+              this.rtype = '';
+              this.price = '';
+              this.roomdesc = '';
+              this.imgURL = '';
+              this.value = '';
+            } else {
+              this.$message.error(res.data.message)
+            }
+
+          })
+          .catch((err) => {
+            this.$message.error('请求失败111，请重试！');
+          });
+      },
+      updateroom(scope) {
+        this.dialogupdata = false;
+        var data = new URLSearchParams();
+        console.log(this.value1s);
+        data.append('rid', this.scope.rid);
+        data.append('rstate', this.value1);
+        data.append('price', this.changeprice);
+        if (this.changeprice !== '' && this.value1 == '') {
+          axios
+            .post('http://127.0.0.1:8081/root/updateroom', data)
+            .then((res) => {
+              this.$message.success('修改成功');
+              this.changeprice = '';
+              this.value1 = ''
+              this.getrooms();
+            })
+            .catch((err) => {
+              this.$message.error('更改失败！');
+            });
+        } else if (this.changeprice == '' && this.value1 !== '') {
+          axios
+            .post('http://127.0.0.1:8081/root/updateroomstate', data)
+            .then((res) => {
+              if (res.data.state === 0) {
+                this.$message.success('修改成功');
+                this.changeprice = '';
+                this.value1 = ''
+                this.getrooms();
+              } else {
+                this.$message.error(res.data.message)
+              }
+
+            })
+            .catch((err) => {
+              this.$message.error('更改失败！');
+            });
+        } else {
+          axios
+            .post('http://127.0.0.1:8081/root/updateroom', data)
+            .then((res) => {
+              if (res.data.state === 0) {
+                axios
+                  .post('http://127.0.0.1:8081/root/updateroomstate', data)
+                  .then((res) => {
+                    if (res.data.state === 0) {
+                      this.changeprice = '';
+                      this.value1 = ''
+                      this.$message.success('修改成功');
+                      this.getrooms();
+                    } else {
+                      this.$message.error(res.data.message)
+                    }
+                  })
+                  .catch((err) => {
+                    this.$message.error('更改失败！');
+                  });
+              } else {
+                this.$message.error(res.data.message)
+              }
+
+            })
+            .catch((err) => {
+              this.$message.error('更改失败！');
+            });
+        }
+      },
+      deleteroom(scope) {
+        this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          })
+          .then(() => {
+            var data = new URLSearchParams();
+            data.append('rid', scope.rid);
+            axios
+              .post('http://127.0.0.1:8081/root/deleteroom', data)
+              .then((res) => {
+                if (res.data.state == 1) {
+                  return this.$message.error('删除失败，已存在此房间的订单！');
+                }
+                this.$message({
+                  type: 'success',
+                  message: '删除成功!',
+                });
+                this.getrooms();
+              })
+              .catch((err) => {
+                this.$message.error('删除失败！');
+              });
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除',
+            });
+          });
+      },
+      updateshow(scope) {
+        this.scope = scope;
+        this.dialogupdata = true;
+      },
+      dachuangfang() {
+        this.usersshow = false;
+        this.roomsshow = true;
+        this.systemshow = false;
+
+        this.ordershow = false;
+        this.newrooms = this.rooms.filter((item) => {
+          return item.rtype === 1;
+        });
+      },
+      shuangrenfang() {
+        this.roomsshow = true;
+        this.usersshow = false;
+        this.systemshow = false;
+
+        this.ordershow = false;
+        this.newrooms = this.rooms.filter((item) => {
+          return item.rtype === 2;
+        });
+      },
+      gongyu() {
+        this.roomsshow = true;
+        this.usersshow = false;
+        this.systemshow = false;
+
+        this.ordershow = false;
+        this.newrooms = this.rooms.filter((item) => {
+          return item.rtype === 4;
+        });
+      },
+      taofang() {
+        this.roomsshow = true;
+        this.ordershow = false;
+        this.usersshow = false;
+        this.systemshow = false;
+
+        this.newrooms = this.rooms.filter((item) => {
+          return item.rtype === 5;
+        });
+      },
+      quit() {
+        this.$confirm('确定出登录嘛?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'info',
+            center: true,
+          })
+          .then(() => {
+            this.$message({
+              type: 'success',
+              message: '退出登录！',
+            });
+            axios
+              .post('http://127.0.0.1:8081/root/deleteroot')
+              .then((res) => {
+                if (res.data.state === 0) {
+                  console.log(res);
+                  this.$message.success('退出登录');
+                } else {
+                  this.$message.error(res.data.message)
+                }
+
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+            window.location.href = '../login.html';
+          })
+          .catch(() => {});
+      },
+      getorder() {
+        this.roomsshow = false;
+        this.systemshow = false;
+        this.usersshow = false;
+
+        this.ordershow = true;
+        axios
+          .post('http://127.0.0.1:8081/root/allorders')
+          .then((res) => {
+            if (res.data.state === 0) {
+              this.orders = res.data.data;
+              this.neworders = this.orders;
+              this.roomsshow = false;
+              this.ordershow = true;
+              for (let i = 0; i < this.neworders.length; i++) {
+                if (this.neworders[i].orderstate == 0) {
+                  this.ruzhu = false;
+                  this.shanchu = true;
+                  this.tuifang = true;
+                  this.neworders[i].orderstatedesc = '未入住';
+                }
+                if (this.neworders[i].orderstate == 1) {
+                  this.ruzhu = true;
+                  this.shanchu = true;
+                  this.tuifang = false;
+                  this.neworders[i].orderstatedesc = '已入住';
+                }
+                if (this.neworders[i].orderstate == 2) {
+                  this.ruzhu = true;
+                  this.shanchu = false;
+                  this.tuifang = true;
+                  this.neworders[i].orderstatedesc = '已退房';
+                }
+                if (this.neworders[i].orderstate == 3) {
+                  this.ruzhu = true;
+                  this.shanchu = false;
+                  this.tuifang = true;
+                  this.neworders[i].orderstatedesc = '用户已删除';
+                }
+              }
+            } else {
+              this.$message.error(res.data.state)
+            }
+
+          })
+          .catch((err) => {
+            this.$message.error('请求失败，请重试！');
+          });
+      },
+      checkin(scope) {
+        this.$confirm('正在办理入住, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          })
+          .then(() => {
+            var data = new URLSearchParams();
+            data.append('orderid', scope.row.orderid);
+            axios
+              .post('http://127.0.0.1:8081/root/checkin', data)
+              .then((res) => {
+                if (res.data.state == 0) {
+                  this.$message.success('办理入住成功！');
+                  this.getorder();
+                } else {
+                  this.$message.error('办理入住失败！');
+                }
+
+              })
+              .catch((err) => {
+                this.$message.error('请求失败！');
+              });
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消取消办理',
+            });
+          });
+      },
+      checkout(scope) {
+        this.$confirm('正在办理退房, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          })
+          .then(() => {
+            var data = new URLSearchParams();
+            data.append('orderid', scope.row.orderid);
+            data.append('rid', scope.row.rid);
+            axios
+              .post('http://127.0.0.1:8081/root/checkoutorder', data)
+              .then((res) => {
+                if (res.data.state == 0) {
+                  this.$message.success('退房成功！');
+                  this.getorder();
+                } else {
+                  this.$message.error('退房失败！');
+                }
+              })
+              .catch((err) => {
+                this.$message.error('请求失败！');
+              });
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消退房',
+            });
+          });
+      },
+      deleorder(scope) {
+        this.$confirm('此操作将永久删除订单, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          })
+          .then(() => {
+            var data = new URLSearchParams();
+            data.append('orderid', scope.row.orderid);
+            axios
+              .post('http://127.0.0.1:8081/root/confdelete', data)
+              .then((res) => {
+                if (res.data.state == 0) {
+                  this.$message.success('删除成功！');
+                  this.getorder();
+                } else {
+                  this.$message.error(res.data.message);
+                }
+              })
+              .catch((err) => {
+                this.$message.error('请求失败！');
+              });
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除',
+            });
+          });
+      },
+      nothandleorder() {
+        this.roomsshow = false;
+        this.usersshow = false;
+        this.systemshow = false;
+
+        this.ordershow = true;
+        this.neworders = this.orders.filter((item) => {
+          return item.orderstate === 0;
+        });
+      },
+      handleordered() {
+        this.roomsshow = false;
+        this.usersshow = false;
+        this.systemshow = false;
+
+        this.ordershow = true;
+        this.neworders = this.orders.filter((item) => {
+          return item.orderstate !== 0;
+        });
+      },
+      getusers() {
+        this.ordershow = false;
+        this.roomsshow = false;
+        this.systemshow = false;
+        this.usersshow = true;
+        axios.post("http://127.0.0.1:8081/root/getusers").then((res) => {
+          if (res.data.state == 0) {
+            this.users = res.data.data
+            for (let i = 0; i < this.users.length; i++) {
+              if (this.users[i].authentication == 0) {
+                this.users[i].authendesc = "已认证"
+              }
+              if (this.users[i].authentication == 1) {
+                this.users[i].authendesc = "未认证"
+              }
+              if (this.users[i].authentication == 2) {
+                this.users[i].authendesc = "已冻结"
+              }
+            }
+          } else {
+            this.$message.error(rea.data.message)
+          }
+
+        }).catch((err) => {
+          this.$message.error("获取用户信息失败！")
+        })
+      },
+      freeze(scope) {
+        this.$confirm('正在冻结用户, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          })
+          .then(() => {
+            var data = new URLSearchParams();
+            data.append('cid', scope.row.cid);
+            axios
+              .post('http://127.0.0.1:8081/root/freeze', data)
+              .then((res) => {
+                if (res.data.state == 0) {
+                  this.$message.success('操作成功！');
+                  this.getusers();
+                } else {
+                  this.$message.error('操作失败！');
+                }
+              })
+              .catch((err) => {
+                this.$message.error('请求失败！');
+              });
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消操作',
+            });
+          });
+      },
+      nofreeze(scope) {
+        this.$confirm('正在解冻用户, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          })
+          .then(() => {
+            var data = new URLSearchParams();
+            data.append('cid', scope.row.cid);
+            axios
+              .post('http://127.0.0.1:8081/root/nofreeze', data)
+              .then((res) => {
+                if (res.data.state == 0) {
+                  this.$message.success('操作成功！');
+                  this.getusers();
+                } else {
+                  this.$message.error('操作失败！');
+                }
+              })
+              .catch((err) => {
+                this.$message.error('请求失败！');
+              });
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消操作',
+            });
+          });
+      },
+      deletecustom(scope) {
+        this.$confirm('正在删除用户, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          })
+          .then(() => {
+            var data = new URLSearchParams();
+            data.append('cid', scope.row.cid);
+            axios
+              .post('http://127.0.0.1:8081/root/deletecustom', data)
+              .then((res) => {
+                if (res.data.state == 0) {
+                  this.$message.success('删除成功！');
+                  this.getusers();
+                } else {
+                  this.$message.error('有关于此用户的订单，删除失败！');
+                }
+              })
+              .catch((err) => {
+                this.$message.error('请求失败！');
+              });
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除',
+            });
+          });
+      },
+      systemopen() {
+        this.ordershow = false;
+        this.roomsshow = false;
+        this.usersshow = false;
+        this.systemshow = true;
+      },
+      backup() {
+        axios.post("http://127.0.0.1:8081/root/backup").then((res) => {
+          if (res.data.state == 0) {
+            this.$message.success("备份成功")
+          } else {
+            this.$message.error("备份失败")
+          }
+        })
+      },
+      restore() {
+        axios.post("http://127.0.0.1:8081/root/restore").then((res) => {
+          if (res.data.state == 0) {
+            this.$message.success("恢复成功")
+          } else {
+            this.$message.error("恢复失败")
+          }
+        })
+      }
+    },
+
+  });
+</script>
+
+</html>

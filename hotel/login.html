@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="plugins/elementui/index.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div id="app">
+        <div id="inputs">
+            <div id="login" @keyup.enter="Login">
+                <h1>酒店管理系统</h1>
+                <label for="username">
+                    <span>用户名</span>
+                    <input type="text" v-model="username" id="username" placeholder=""></input>
+                </label>
+                <label for="password">
+                    <span>密码</span>
+                    <input type="password" v-model="password" id="password" placeholder=""></input>
+                </label>
+                <el-switch style="margin: 0 200px;margin-bottom:50px;" v-model="isroot" active-text="管理员"
+                    inactive-text="普通用户">
+                </el-switch>
+                <button @click="Login">登录</button>
+            </div>
+            <div id="back">
+                <h1>还未注册？</h1>
+                <a href="./pages/register.html"><button>注册</button></a>
+            </div>
+        </div>
+    </div>
+</body>
+<!--引入 vue-->
+<script src="./js/vue.js"></script>
+<!--引入 axios-->
+<script src="./js/axios.min.js"></script>
+<!-- 引入组件库 -->
+<script src="./plugins/elementui/index.js"></script>
+<!-- 自己的js -->
+<script src="./index.js"></script>
+
+</html>

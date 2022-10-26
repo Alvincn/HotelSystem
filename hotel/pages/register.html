@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户注册</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <link rel="stylesheet" href="../css/register.css">
+</head>
+
+<body>
+    <div id="app">
+        <div id="inputs">
+            <div id="login">
+                <h1>欢迎注册</h1>
+                <label for="username">
+                    <span>用户名</span>
+                    <input type="text" v-model="username" id="username" placeholder=""></input>
+                </label>
+                <label for="password">
+                    <span>密码</span>
+                    <input type="password" v-model="password" id="password" placeholder=""></input>
+                </label>
+                <label for="confirmpassword">
+                    <span>确认密码</span>
+                    <input type="password" v-model="confPassword" id="confpassword" placeholder=""></input>
+                </label>
+                <button @click="register">注册</button>
+            </div>
+            <div id="back">
+                <h1>已有账号？</h1>
+                <a href="../login.html"><button>登录</button></a>
+            </div>
+        </div>
+    </div>
+</body>
+<!--引入 vue-->
+<script src="../js/vue.js"></script>
+<!--引入 axios-->
+<script src="../js/axios.min.js"></script>
+<!-- 引入组件库 -->
+<script src="../plugins/elementui/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                username: '',
+                password: '',
+                confPassword: '',
+            }
+        },
+        methods: {
+            register() {
+                if (this.password !== this.confPassword) {
+                    this.$message.error('两次密码不一致！');
+                } else {
+                    var data = new URLSearchParams();
+                    data.append("username", this.username);
+                    data.append("password", this.password);
+                    axios.post('http://127.0.0.1:8081/api/register', data).then((res) => {
+                        if (res.data.state === 0) {
+                            this.$message.success('注册成功，跳转到登录页面');
+                            setTimeout(() => {
+                                window.location.href = "../login.html";
+                            }, 1000);
+                        } else {
+                            this.$message.router.onError()('注册失败，请稍后再试');
+                        }
+                    }).catch((err) => {
+                        console.log(err);
+                        this.$message.error("请求错误，请稍后再试！")
+                    })
+                }
+            }
+        }
+    })
+</script>
+
+</html>
