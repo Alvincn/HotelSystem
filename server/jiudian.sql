@@ -41,7 +41,6 @@ CREATE TABLE `custom` (
 
 LOCK TABLES `custom` WRITE;
 /*!40000 ALTER TABLE `custom` DISABLE KEYS */;
-INSERT INTO `custom` VALUES (1,'chenshibo','123456','陈士�?,123456,123456,0),(124,'chenyuhong','123456','陈语�?,123,123,0),(129,'dazuo','123','123',123,123,0);
 /*!40000 ALTER TABLE `custom` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -66,7 +65,7 @@ CREATE TABLE `department` (
 
 LOCK TABLES `department` WRITE;
 /*!40000 ALTER TABLE `department` DISABLE KEYS */;
-INSERT INTO `department` VALUES (1,'前台',1),(2,'保洁',2);
+INSERT INTO `department` VALUES (1,'�',1),(2,'靽�',2);
 /*!40000 ALTER TABLE `department` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -96,7 +95,7 @@ CREATE TABLE `room` (
 
 LOCK TABLES `room` WRITE;
 /*!40000 ALTER TABLE `room` DISABLE KEYS */;
-INSERT INTO `room` VALUES (101,1,0,-1000.00,'高级大床�?,'https://img0.baidu.com/it/u=3822682991,2715556166&fm=253&fmt=auto&app=138&f=JPEG?w=550&h=410'),(111,1,0,299.00,'温馨大床�?,'https://img0.baidu.com/it/u=3147109492,1011781228&fm=253&fmt=auto&app=120&f=JPEG?w=750&h=500'),(115,1,0,178.00,'舒适大床房','https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpix10.agoda.net%2FhotelImages%2F102%2F10238330%2F10238330_19102811290082770409.jpg&refer=http%3A%2F%2Fpix10.agoda.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654839784&t=3ea89fb0aa80427f6914514fe0ba9e99'),(210,2,0,123.00,'商务双床�?,'https://img0.baidu.com/it/u=2189844432,1369012944&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=375'),(215,2,0,399.00,'精品双床�?,'https://img2.baidu.com/it/u=1935054304,1309093467&fm=253&fmt=auto&app=138&f=JPEG?w=751&h=500'),(416,4,0,699.00,'梦中情房','https://img2.baidu.com/it/u=2978359128,1989817240&fm=253&fmt=auto&app=138&f=JPEG?w=743&h=500'),(423,4,0,300.00,'豪华LOFT公寓','https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fnimg.ws.126.net%2F%3Furl%3Dhttp%253A%252F%252Fdingyue.ws.126.net%252F2021%252F0927%252F8fbca212j00r036cm001tc000hs00jmm.jpg%26thumbnail%3D650x2147483647%26quality%3D80%26type%3Djpg&refer=http%3A%2F%2Fnimg.ws.126.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654178895&t=ba57ce1bdaad67e1331157115470ac3c'),(425,4,0,499.00,'温馨LOFT公寓','https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn9.cmsfile.pg0.cn%2Fgroup3%2FM00%2F0B%2F17%2FCgoOFF8fz_iAevaDAAGGR7r5_Eo311.jpg&refer=http%3A%2F%2Fn9.cmsfile.pg0.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654839048&t=81dce48d5e9cd5e380eb150b2058dedd'),(555,5,0,499.00,'总统套房','https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp8.itc.cn%2Fimages01%2F20210802%2F46dd7958318b4dcc9f24bf55056e83b5.png&refer=http%3A%2F%2Fp8.itc.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654179005&t=cae763b3fb259a6095a6b9ae5c59d5da'),(666,5,0,799.00,'六六大顺总统套房','https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fptf.flyertrip.com%2Fforum%2F2020%2F10%2F17%2F142749DECKIAGFDGRSLREE.png&refer=http%3A%2F%2Fptf.flyertrip.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654179005&t=c139a4af4314e7039d884022d6fffe7f');
+INSERT INTO `room` VALUES (101,1,0,-1000.00,'擃漣憭批��?,'https://img0.baidu.com/it/u=3822682991,2715556166&fm=253&fmt=auto&app=138&f=JPEG?w=550&h=410'),(111,1,0,299.00,'皜拚成憭批��?,'https://img0.baidu.com/it/u=3147109492,1011781228&fm=253&fmt=auto&app=120&f=JPEG?w=750&h=500'),(115,1,0,178.00,'�之摨','https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpix10.agoda.net%2FhotelImages%2F102%2F10238330%2F10238330_19102811290082770409.jpg&refer=http%3A%2F%2Fpix10.agoda.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654839784&t=3ea89fb0aa80427f6914514fe0ba9e99'),(210,2,0,123.00,'����?,'https://img0.baidu.com/it/u=2189844432,1369012944&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=375'),(215,2,0,399.00,'蝎曉����?,'https://img2.baidu.com/it/u=1935054304,1309093467&fm=253&fmt=auto&app=138&f=JPEG?w=751&h=500'),(416,4,0,699.00,'璇虫葉�','https://img2.baidu.com/it/u=2978359128,1989817240&fm=253&fmt=auto&app=138&f=JPEG?w=743&h=500'),(423,4,0,300.00,'鞊芸�LOFT�砍�','https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fnimg.ws.126.net%2F%3Furl%3Dhttp%253A%252F%252Fdingyue.ws.126.net%252F2021%252F0927%252F8fbca212j00r036cm001tc000hs00jmm.jpg%26thumbnail%3D650x2147483647%26quality%3D80%26type%3Djpg&refer=http%3A%2F%2Fnimg.ws.126.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654178895&t=ba57ce1bdaad67e1331157115470ac3c'),(425,4,0,499.00,'皜拚成LOFT�砍�','https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn9.cmsfile.pg0.cn%2Fgroup3%2FM00%2F0B%2F17%2FCgoOFF8fz_iAevaDAAGGR7r5_Eo311.jpg&refer=http%3A%2F%2Fn9.cmsfile.pg0.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654839048&t=81dce48d5e9cd5e380eb150b2058dedd'),(555,5,0,499.00,'�餌�憟','https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp8.itc.cn%2Fimages01%2F20210802%2F46dd7958318b4dcc9f24bf55056e83b5.png&refer=http%3A%2F%2Fp8.itc.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654179005&t=cae763b3fb259a6095a6b9ae5c59d5da'),(666,5,0,799.00,'�剖憭折◇�餌�憟','https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fptf.flyertrip.com%2Fforum%2F2020%2F10%2F17%2F142749DECKIAGFDGRSLREE.png&refer=http%3A%2F%2Fptf.flyertrip.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654179005&t=c139a4af4314e7039d884022d6fffe7f');
 /*!40000 ALTER TABLE `room` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -196,7 +195,7 @@ CREATE TABLE `root` (
 
 LOCK TABLES `root` WRITE;
 /*!40000 ALTER TABLE `root` DISABLE KEYS */;
-INSERT INTO `root` VALUES (1,'root','123456',0),(2,'rootname','123456',0);
+INSERT INTO `root` VALUES (1,'root','123456',0)；
 /*!40000 ALTER TABLE `root` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -225,7 +224,7 @@ DROP TABLE IF EXISTS `staff`;
 CREATE TABLE `staff` (
   `sid` int NOT NULL AUTO_INCREMENT,
   `sname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `sstate` tinyint DEFAULT NULL COMMENT '0 正常 1 不正�?,
+  `sstate` tinyint DEFAULT NULL COMMENT '0 甇�虜 1 銝迤撣?,
   `sphone` int DEFAULT NULL,
   `sbirth` varchar(255) DEFAULT NULL,
   `denum` int DEFAULT NULL,
@@ -241,7 +240,6 @@ CREATE TABLE `staff` (
 
 LOCK TABLES `staff` WRITE;
 /*!40000 ALTER TABLE `staff` DISABLE KEYS */;
-INSERT INTO `staff` VALUES (1,'李小�?,0,123,'123',1),(2,'于林�?,0,123,'123',2);
 /*!40000 ALTER TABLE `staff` ENABLE KEYS */;
 UNLOCK TABLES;
 
